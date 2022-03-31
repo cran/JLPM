@@ -1,0 +1,15 @@
+809dd1cc1697f9aa97ac465ac6477170 *DESCRIPTION
+9235b0a218d6e8d2ba65589a48d8b6b1 *NAMESPACE
+004e72ef137dbaa35434e29265204e3c *R/JLPM-package.R
+e41c6b856b2b89927c2657df77855e79 *R/jointLPM.R
+6257696a54041a8e07be6440d4e35dd6 *R/print.jointLPM.R
+f8e988424ee58b93ddccfd7651961aed *R/summary.jointLPM.R
+ae8acaddeafc414e3d432f83dd448936 *man/JLPM-package.Rd
+d128eab778c0dd71f3da2a2b4a04db20 *man/jointLPM.Rd
+6296d1ec87bb08f96afba1cbba4045c0 *man/print.jointLPM.Rd
+9c122d9b5da91a5e767052ab0a6de459 *man/summary.jointLPM.Rd
+f7e5d02aaec2a073c50227c2facff93a *src/JLPM.h
+3f2e57cfebd1d3ce9c12d5f7c5289583 *src/Makevars
+9c01d69f94b6d411d6364d6eddc11482 *src/compute.f90
+92905926f68b28e5b11630c354956a3f *src/init.c
+793a266946dab8fd7409b3f0f3c14cc6 *src/loglik.f90

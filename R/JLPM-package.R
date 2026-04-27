@@ -10,13 +10,13 @@
 #' via github only (https://github.com/VivianePhilipps/JLPM/issues).
 #' 
 #' @name JLPM-package
-#' @docType package
-#' @author Cecile Proust-Lima, Viviane Philipps, Tiphaine Saulnier
+#' @author Viviane Philipps, Tiphaine Saulnier and Cecile Proust-Lima
 #' 
 #' @references
 #' Saulnier, Philipps, Meissner, Rascol, Pavy-Le-Traon, Foubert-Samier, Proust-Lima (2022).
 #' Joint models for the longitudinal analysis of measurement scales in the presence 
-#' of informative dropout, Methods 203.
+#' of informative dropout, Methods; 203:142-51. 
+
 #' 
 #' Philipps, Hejblum, Prague, Commenges, Proust-Lima (2021).
 #' Robust and efficient optimization using a Marquardt-Levenberg algorithm with 
@@ -25,13 +25,14 @@
 #' @keywords package
 #' @importFrom graphics axis hist lines matlines matplot mtext par plot points segments polygon
 #' @importFrom grDevices rainbow rgb col2rgb n2mfrow
-#' @importFrom stats as.formula formula get_all_vars integrate median model.frame model.matrix na.fail na.omit na.pass pchisq pnorm qnorm quantile rnorm sd terms residuals vcov fitted coef update
+#' @importFrom stats as.formula formula get_all_vars integrate median model.frame model.matrix delete.response na.action na.fail na.omit na.pass pchisq dnorm pnorm qnorm quantile rnorm sd terms residuals vcov fitted coef update
 #' @importFrom survival Surv untangle.specials
-#' @importFrom randtoolbox sobol
+#' @importFrom spacefillr generate_sobol_owen_set
 #' @importFrom stringr str_detect
+#' @importFrom utils as.roman
 #' @importFrom parallel clusterEvalQ clusterExport clusterSetRNGStream makeCluster parApply stopCluster
 #' @importFrom marqLevAlg mla
-#' @importFrom lcmm multlcmm Jointlcmm
+#' @importFrom lcmm multlcmm Jointlcmm predictYcond
 #' @useDynLib JLPM, .registration=TRUE, .fixes="C_"
 NULL
 

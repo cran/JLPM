@@ -1,4 +1,4 @@
-32d70ac9ccedbb460685ca88669053ef *DESCRIPTION
+c0ce6b493020030745e3d6e940e53191 *DESCRIPTION
 6d7dc606ee4f503b74b2bbc056ebab82 *NAMESPACE
 b7dc2ca9f293106edf36145ee6f68687 *R/ForInternalUse.R
 91f5d0c4eb12e131a8823969f19e34c1 *R/IRT4Sselecting.R
@@ -16,7 +16,6 @@ bcdfacb913f15150c16780e95603f7a2 *R/derivMat.R
 70cdafb02e1fd1342d0c65a2184fdec8 *R/integrate_info.R
 be9430ac937e80dd9e631281546a091b *R/jointLPM.R
 777288c16f771a28e2900189d5fe15e2 *R/matrixGK.R
-5e9916d69b36847b761247f82a9ec732 *R/plotAsso.R
 1678e7c498fd38146e94a3605b47ece9 *R/predictRE.R
 b6867da31afedd613dc2a8093cf85385 *R/print.jointLPM.R
 acf3ba3c10a19838004549b89c18578f *R/removeNA.R
@@ -24,9 +23,7 @@ b2eba931eca68553e4cc084189960268 *R/sojournTime.R
 4785a50fdf578d254ce620beb71f810d *R/standardMethods.R
 e30076e6cda3a5498eb1b7ce9830a143 *R/summary.jointLPM.R
 3ab3924c7523163a51b37aae201c18c4 *R/vcov.jointLPM.R
-45042809799f8ba91d93efb994a40b67 *build/vignette.rds
-8f7695b556486063fccb8c24cefb2443 *inst/doc/JLPM.Rmd
-c88738466634672ec2cef1e62160814f *inst/doc/JLPM.html
+e5919895938bd07f41250b052bd35985 *README.md
 085a1080dff2631877a5df5af298bb54 *man/ForInternalUse.Rd
 5c9828afd597f72f26b54b3766ac58c5 *man/IRT4Sselecting.Rd
 6baefa74c40e8e739aa9dda2e7df2c0c *man/IRT4Sstaging.Rd
@@ -46,10 +43,9 @@ d29b92578059e21e91484cec0eacd275 *man/predictRE.Rd
 028cbf2e59d485086806cb1415bd1c04 *man/sojournTime.Rd
 9c122d9b5da91a5e767052ab0a6de459 *man/summary.jointLPM.Rd
 1b561fcec485e0457fad42fcebf5d940 *src/JLPM.h
-b95021f043a865503c8c82133214100e *src/Makevars
+5708f7c5a06d34c5f5f149651e6c4d81 *src/Makevars
 29425564e9c493b995f69b2c075ab22e *src/compute.f90
 68689d9f188c4a756af720c637fb8c7b *src/init.c
 49a842a0a3becbcc76b18f78e4abd785 *src/loglik.f90
 9324d0797336a18c24ee01f992c67b46 *src/reconddensity.f90
 9344305da9a671d7e1e5a8a75664486a *src/runiran.c
-8f7695b556486063fccb8c24cefb2443 *vignettes/JLPM.Rmd

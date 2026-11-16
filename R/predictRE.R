@@ -215,7 +215,7 @@ createFargs <- function(x, data)
                    "ny0", "ns0", "nv0", "nobs0", "nmes0", "idiag0", "ncor0",
                    "nalea0", "npm0", "nfix0", "bfix0", "epsY0", "idlink0",
                    "nbzitr0", "zitr0", "uniqueY0", "indiceY0", "nvalSPLORD0",
-                   "fix0", "methInteg0", "nMC0", "dimMC0", "seqMC0", "idst0",
+                   "fix0", "nMC0", "dimMC0", "seqMC0", "idst0",
                    "nXcl0", "Xcl_Ti0", "Xcl_GK0", "Xcs_Ti0", "Xcs_GK0",
                    "nonlin0", "centerpoly0", "expectancy0")
 
@@ -251,7 +251,7 @@ createFargs <- function(x, data)
     res$typrisq0 <- x$typrisq
     res$nz0 <- x$nz
     res$zi0 <- x$hazardnodes
-    res$nbevt0 <- length(x$nevent)
+    res$nbevt0 <- x$N[14]
     res$idtrunc0 <- ifelse(length(x$call$survival[[2]]) == 4, 1, 0)
     res$logspecif0 <- x$logspecif
     res$ny0 <- x$N[12]
@@ -274,7 +274,6 @@ createFargs <- function(x, data)
         if(as.character(x$call$methInteg) == "MCO") methInteg <- 1
         if(as.character(x$call$methInteg) == "MCA") methInteg <- 2
     }
-    res$methInteg0 <- methInteg
     
     res$nMC0 <- x$nMC
     res$idst0 <- x$sharedtype
@@ -284,10 +283,13 @@ createFargs <- function(x, data)
 
     if(!is.null(data))
     {
-        resNA <- removeNA(x$terms, data)
+        terms2 <- x$terms
+        terms2[[2]] <- NULL
+        terms2[[2]] <- terms(update(terms2[[2]], formula(paste(paste(x$Names$Ynames, collapse = "+"), "~", as.character(terms2[[2]])[2]))))
+        resNA <- removeNA(terms2, data)
         dataWithoutNA <- resNA$newdata
 
-        nobsparY <- resNA$nmes
+        nobsparY <- rep(NA, res$ny0)
         uniqueY0 <- NULL
         indiceY0 <- NULL
         nvalSPLORD <- rep(0, res$ny0)
@@ -295,35 +297,39 @@ createFargs <- function(x, data)
         nb <- 0
         for(k in 1:res$ny0)
         {
-            if((res$idlink0 != 2) & (res$idlink0 != 3))
+            nobsparY[k] <- nrow(data) - length(resNA$XlinesNA) - length(resNA$YlinesNA[[k]])
+                
+            if((res$idlink0[k] != 2) & (res$idlink0[k] != 3))
             {
                 indiceY0 <- c(indiceY0, rep(0, nobsparY[k]))
                 next
             }
 
-            yk <- dataWithoutNA[sumnobsparY + 1:nobsparY[k],]
+            yk <- dataWithoutNA[sumnobsparY + 1:nobsparY[k], "outcome"]
             uniqueTemp <- sort(unique(yk))
             permut <- order(order(yk))
 
-            if(length(as.vector(table(yk))) == length(uniqueTemp))
+            if(length(as.vector(table(yk))) == length(uniqueTemp)) # si pas de pb d'arrondi
             {
-                indice <- rep(1:length(uniqueTemp), as.vector(table(yk)))
                 if(res$idlink0[k] == 2)
                 {
+                    indice <- rep(1:length(uniqueTemp), as.vector(table(yk)))
                     indiceTemp <- nb + indice[permut]
+                    nvalSPLORD[k] <- length(uniqueTemp)
                 }
                 else
                 {
+                    indice <- rep(1:length(x$mod[[k]]), table(factor(yk, levels = x$mod[[k]])))
                     indiceTemp <- indice[permut]
+                    nvalSPLORD[k] <- length(x$mod[[k]])
                 }
                 
                 nb <- nb + length(uniqueTemp)
-                
+
                 uniqueY0 <- c(uniqueY0, uniqueTemp)
                 indiceY0 <- c(indiceY0, indiceTemp)
-                nvalSPLORD[k] <- length(uniqueTemp)
             }
-            else
+            else # pas les memes arrondis entre table et unique
             {
                 uniqueY0 <- c(uniqueY0, yk)
                 indiceY0 <- c(indiceY0, ifelse(res$idlink0[k] == 2, nb, 0) + c(1:length(yk)))
@@ -338,7 +344,8 @@ createFargs <- function(x, data)
         res$uniqueY0 <- uniqueY0
         res$indiceY0 <- indiceY0[order(dataWithoutNA[, x$Names$ID])]
         dataWithoutNA <- dataWithoutNA[order(dataWithoutNA[, x$Names$ID]),]
-        res$Y0 <- as.vector(dataWithoutNA[, x$Names$Ynames])
+        res$Y0 <- as.vector(dataWithoutNA[, "outcome"])
+        res$nvalSPLORD0 <- nvalSPLORD
         
         id <- unique(dataWithoutNA[, x$Names$ID])
         listnmes <- tapply(data[, x$Names$Ynames, drop = FALSE], data[, x$Names$ID], function(d) apply(d, 2, function(x) length(which(!is.na(x)))))
@@ -423,12 +430,23 @@ createFargs <- function(x, data)
     }
     
     seqMC <- 0
-    dimMC <- 0
-    if(methInteg==3)
+    dimMC <- sum(res$idea0) + res$nalea0
+    if(res$ncor0 > 0) dimMC <- dimMC + maxmes # maxmes dep des donnees      
+    if((dimMC > 0) & (res$nMC0 > 0))
     {
-        dimMC <- sum(res$idea0) + res$nalea0
-        if(res$ncor0 > 0) dimMC <- dimMC + maxmes # maxmes dep des donnees
-        if((dimMC > 0) & (res$nMC0 > 0))
+        if(methInteg==1)
+        {
+            seqMC <- rnorm(res$nMC0 * dimMC)
+        }
+        
+        if(methInteg==2)
+        {
+            seq1 <- rnorm(round(res$nMC0 * dimMC / 2))
+            seq2 <- cbind(seq1, -seq2)
+            seqMC <- as.vector(t(seq2))[1:(res$nMC0 * dimMC)]
+        }
+            
+        if(methInteg==3)
         {
             sequnif <- spacefillr::generate_sobol_owen_set(res$nMC0, dimMC)
             seqMC <- apply(sequnif, 2, qnorm)
@@ -436,6 +454,56 @@ createFargs <- function(x, data)
     }
     res$dimMC0 <- dimMC
     res$seqMC0 <- seqMC
+
+    return(res)
+}
+
+
+
+#' Posterior density of the random effects for 1 subject
+#'
+#' @param value numeric vector containing the value at which the log-likelihood will be computed
+#' @param x a \code{jointLPM} object
+#' @param data a data.frame object containing the observations of a single subject
+#' @return the conditional log-likelihood of the random effects given the observed data
+#' @export
+posteriorLogLikelihood <- function(value, x, data)
+{
+    data <- as.data.frame(data)
+
+    ## loglik arguments
+    Fargs <- createFargs(x, data)
+
+    ## no cor, no randomY
+    if(Fargs$ncor0 > 0) stop("No implemented yet with cor")
+    if(Fargs$nalea0 > 0) stop("No implemented yet with randomY")
+
+    ## id in (clean) data
+    id <- as.numeric(Fargs$ID)
+    Fargs <- Fargs[setdiff(names(Fargs), "ID")]
+
+    ## remove unused arguments
+    Fargs$ns0 <- NULL
+    Fargs$methInteg0 <- NULL
+    Fargs$nMC0 <- NULL
+    Fargs$dimMC0 <- NULL
+    Fargs$seqMC0 <- NULL
+    Fargs$expectancy0 <- NULL
+    if(Fargs$nfix0 > 0) # we don't need to distingish b from bfix
+    {
+        Fargs$npm0 <- Fargs$npm0 + Fargs$nfix0
+        btot <- rep(NA, Fargs$npm0)
+        btot[which(Fargs$fix0 == 0)] <- Fargs$b0
+        btot[which(Fargs$fix0 == 1)] <- Fargs$bfix0
+        Fargs$b0 <- btot
+    }
+    Fargs$fix0 <- NULL
+    Fargs$nfix0 <- NULL
+    Fargs$bfix0 <- NULL
+
+    args_i <- Fargs
+
+    res <- do.call("REconddensity", c(list(ui0 = value), args_i))
 
     return(res)
 }

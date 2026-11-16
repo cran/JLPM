@@ -278,7 +278,7 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
                         typrisq,nz,zi,nbevt,idtrunc,logspecif,
                         ny,nv,nobs,nea,nmes,idiag,ncor,nalea,
                         epsY,idlink,nbzitr,zitr,uniqueY,indiceY,indiceYinf,
-                        nvalSPLORD,fix,methInteg,nMC,dimMC,seqMC,npm,b,nfix,bfix,computeSurv)
+                        nvalSPLORD,fix,nMC,dimMC,seqMC,npm,b,nfix,bfix,computeSurv)
     {
         ## The function computes P(T > t, Y(t) = 0, Y(s) = 0) ##
         
@@ -312,7 +312,10 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
         ## to compute P(Y(t)=0, Y(s) = 0):
         time <- ifelse(indic_s1t2==1, s, t)
         ##cat("time=", time, "\n")
-        newdata <- data.frame(newdata, t=time, row.names=NULL)
+        newdata <- try(data.frame(newdata, t=time, row.names=NULL), silent = TRUE)
+        if(inherits(newdata, "try-error")){
+             newdata <- data.frame(newdata, t=startTime, row.names=NULL)
+        }
                 
         Xfixed <- model.matrix(fixed, data=newdata)
         Xrandom <- model.matrix(random, data=newdata)
@@ -342,6 +345,10 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
             
             b <- bsansSurv[which(fixsansSurv == 0)]
             bfix <- bsansSurv[which(fixsansSurv == 1)]
+
+            npm <- length(b)
+            nfix <- length(bfix)
+            fix <- fix[-c(1:sum(x$N[1:4]))]
         }
         
         nonlin <- x$nonlin 
@@ -391,7 +398,6 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
                         as.integer(indiceYinf),
                         as.integer(nvalSPLORD),
                         as.integer(fix),
-                        as.integer(methInteg),
                         as.integer(nMC),
                         as.integer(dimMC),
                         as.double(seqMC),
@@ -432,7 +438,7 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
                           nalea=nalea,
                           epsY=epsY,idlink=idlink,nbzitr=nbzitr,zitr=zitr,
                           uniqueY=uniqueY,indiceY=indiceY,indiceYinf=indiceYinf,
-                          nvalSPLORD=nvalSPLORD,fix=fix,methInteg=methInteg,nMC=nMC,
+                          nvalSPLORD=nvalSPLORD,fix=fix,nMC=nMC,
                           dimMC=dimMC,seqMC=seqMC,npm=npm,b=bdrawest,nfix=nfix,bfix=bdrawfix,
                           computeSurv= 1,
                           rel.tol=rel.tol, subdivisions=subdivisions))
@@ -465,7 +471,7 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
                             ncor=ncor,nalea=nalea,
                             epsY=epsY,idlink=idlink,nbzitr=nbzitr,zitr=zitr,uniqueY=uniqueY,
                             indiceY=indiceYcond,indiceYinf=indiceYinfcond,
-                            nvalSPLORD=nvalSPLORD,fix=fix,methInteg=methInteg,nMC=nMC,
+                            nvalSPLORD=nvalSPLORD,fix=fix,nMC=nMC,
                             dimMC=dimMC,seqMC=seqMC,
                             npm=npm,b=bdrawest,nfix=nfix,bfix=bdrawfix, computeSurv=computeSurv)
 
@@ -541,7 +547,7 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
                           "nalea",
                           "epsY", "idlink", "nbzitr", "zitr",
                           "uniqueY", "indiceY", "indiceYinf",
-                          "nvalSPLORD", "fix", "methInteg", "nMC",
+                          "nvalSPLORD", "fix", "nMC",
                           "dimMC", "seqMC", "npmtot", "btot",
                           "rel.tol", "subdivisions",
                           "fctprob", "Ycond", "indiceYcond"), envir = environment())
@@ -567,6 +573,9 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
         {
             class(res) <- c("sojournTime", "draws")
             if(!is.null(seed)) attr(res, "seed") <- seed
+            attr(res, "items") <- names(maxState)
+            attr(res, "maxState") <- maxState
+            attr(res, "condState") <- condState
             return(res)
         }
 
@@ -581,6 +590,9 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
 
         result <- c(res_50, res_2.5, res_97.5, res_mean, res_sd, nn)
         if(!is.null(seed)) attr(result, "seed") <- seed  
+        attr(res, "items") <- names(maxState)
+        attr(res, "maxState") <- maxState
+        attr(res, "condState") <- condState
         class(result) <- c("sojournTime", "IC")
     }
 
@@ -599,5 +611,5 @@ sojournTime <- function(x, maxState, condState=NULL, newdata, var.time,
 ##      as.integer(typrisq),as.integer(nz),as.double(zi),as.integer(nbevt),as.integer(idtrunc),as.integer(logspecif),
 ##      as.integer(ny),as.integer(nv),as.integer(nobs),as.integer(nea),as.integer(nmes),as.integer(idiag),as.integer(ncor),as.integer(nalea),
 ##      as.double(epsY),as.integer(idlink),as.integer(nbzitr),as.double(zitr),as.integer(uniqueY),as.integer(indiceY),
-##      as.integer(nvalSPLORD),as.integer(fix),as.integer(methInteg),as.integer(nMC),as.integer(dimMC),as.double(seqMC),as.integer(npmtot),as.double(btot),res=as.double(proba))$res
+##      as.integer(nvalSPLORD),as.integer(fix),as.integer(nMC),as.integer(dimMC),as.double(seqMC),as.integer(npmtot),as.double(btot),res=as.double(proba))$res
 ## }

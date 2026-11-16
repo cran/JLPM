@@ -1,8 +1,8 @@
 Package: JLPM
 Type: Package
 Title: Joint Latent Process Models
-Version: 1.0.4
-Date: 2026-04-30
+Version: 1.0.5
+Date: 2026-11-16
 Authors@R: c(person("Viviane", "Philipps", role=c("aut", "cre"), email="Viviane.Philipps@u-bordeaux.fr"),
              person("Tiphaine", "Saulnier", role="aut"),
 	     person("Cecile", "Proust-Lima", role="aut"))
@@ -14,12 +14,12 @@ Imports: survival (>= 2.37-2), spacefillr, stringr, marqLevAlg (>=
 URL: https://VivianePhilipps.github.io/JLPM/
 BugReports: https://github.com/VivianePhilipps/JLPM/issues
 LazyLoad: yes
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.1
 NeedsCompilation: yes
-Packaged: 2026-05-04 08:18:52 UTC; vp3
+Packaged: 2026-11-16 09:58:04 UTC; vp3
 Author: Viviane Philipps [aut, cre],
   Tiphaine Saulnier [aut],
   Cecile Proust-Lima [aut]
 Maintainer: Viviane Philipps <Viviane.Philipps@u-bordeaux.fr>
 Repository: CRAN
-Date/Publication: 2026-05-04 13:00:13 UTC
+Date/Publication: 2026-11-16 11:10:22 UTC
